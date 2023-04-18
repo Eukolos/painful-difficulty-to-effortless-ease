@@ -20,15 +20,13 @@ public class RestApiWithtoutSpringApplication {
 	public static void main(String[] args) throws SQLException, IOException {
 
 		var dataSource = new DataSourceConfig().dataSource();
-		var template = new JdbcTemplate(dataSource);// not used
-		template.afterPropertiesSet();
-		var cs = new CustomerService(template);
-		var all = cs.getAllCustomers();
-		int serverPort = 8000;
-		HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+		var cs = new CustomerService(dataSource);
+		var server = HttpServer.create(new InetSocketAddress(8080), 0);
 		var cc = new CustomerController(cs, server);
 		new HttpServerConfig(server, cc).getHttpServer();
 
+
+		var all = cs.getAllCustomers();
 		all.forEach(c -> log.info(c.toString()));
 
 
