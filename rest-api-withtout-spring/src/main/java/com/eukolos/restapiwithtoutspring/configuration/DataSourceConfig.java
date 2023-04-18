@@ -14,8 +14,9 @@ public class DataSourceConfig {
        Server server = Server.createTcpServer("-tcpAllowOthers").start();
        log.info("H2 database server started and listening on port " + server.getPort());
        var dataSource = new DriverManagerDataSource(
-               "jdbc:h2:~/test;INIT=\\;RUNSCRIPT FROM 'classpath:create_schema.sql'\\;RUNSCRIPT FROM 'classpath:data.sql'",
+               "jdbc:h2:~/test;INIT=\\;DROP ALL OBJECTS\\;RUNSCRIPT FROM 'classpath:create_schema.sql'\\;RUNSCRIPT FROM 'classpath:data.sql'",
                "sa", "");
+
        dataSource.setDriverClassName(Driver.class.getName());
        return dataSource;
    };
