@@ -1,6 +1,5 @@
 package com.eukolos.restapiwithtoutspring.configuration;
 
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.Server;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
