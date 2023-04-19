@@ -4,22 +4,24 @@ import com.eukolos.restapiwithspringframework.customer.CustomerController;
 import com.eukolos.restapiwithspringframework.customer.CustomerDao;
 import com.eukolos.restapiwithspringframework.customer.CustomerService;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.Driver;
 import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.sql.DataSource;
-import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Objects;
 
