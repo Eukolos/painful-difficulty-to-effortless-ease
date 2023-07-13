@@ -1,12 +1,16 @@
 package com.eukolos.restapiwithspringframework.configuration;
 
-import com.eukolos.restapiwithspringframework.customer.CustomerController;
+import com.eukolos.restapiwithspringframework.customer.Customer;
 import com.eukolos.restapiwithspringframework.customer.CustomerDao;
 import com.eukolos.restapiwithspringframework.customer.CustomerService;
+import com.eukolos.restapiwithspringframework.customer.CustomerServlet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.Driver;
 import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -18,8 +22,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,41 +37,54 @@ public class BeanConfig {
 
     @Value("classpath:data.sql")
     private Resource dataScript;
+
    /* @Bean
     TransactionTemplate transactionTemplate(PlatformTransactionManager ptm) {
         return new TransactionTemplate(ptm);
     }*/
     @Bean
-    CustomerController customerController(CustomerService customerService){
-        return new CustomerController(customerService);
+    public CommandLineRunner commandLineRunner(CustomerDao customerDao){
+        return args -> log.warn(
+                customerDao.getAllCustomers().toString()
+        );
+    }
+
+    @Bean
+    public Gson getGson(){
+        return new GsonBuilder().create();
     }
     @Bean
-    CustomerService customerService(CustomerDao customerDao){
+    public CustomerServlet customerServlet(CustomerService customerService, Gson gson){
+        return new CustomerServlet(customerService, gson);
+    }
+    @Bean
+    public CustomerService customerService(CustomerDao customerDao) {
         return new CustomerService(customerDao);
     }
+
     @Bean
-    CustomerDao customerDao(JdbcTemplate jdbcTemplate) {
+    public CustomerDao customerDao(JdbcTemplate jdbcTemplate) {
         return new CustomerDao(jdbcTemplate);
     }
+
     @Bean
-    DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
+    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean
-    JdbcTemplate jdbcTemplate(DataSource dataSource) {
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
     @Bean
-    DriverManagerDataSource dataSource(Environment environment) throws SQLException {
+    public DriverManagerDataSource dataSource(Environment environment) throws SQLException {
         Server server = Server.createTcpServer("-tcpAllowOthers").start();
         log.info("H2 database server started and listening on port " + server.getPort());
         var dataSource = new DriverManagerDataSource(
-                Objects.requireNonNull(environment.getProperty("spring.datasource.url")),
+                Objects.requireNonNull(server.getURL()),
                 Objects.requireNonNull(environment.getProperty("spring.datasource.username")),
                 Objects.requireNonNull(environment.getProperty("spring.datasource.password")));
-
         dataSource.setDriverClassName(Driver.class.getName());
         return dataSource;
     }

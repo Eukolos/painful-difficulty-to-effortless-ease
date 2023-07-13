@@ -1,9 +1,12 @@
 package com.eukolos.restapiwithspringframework.customer;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 @RequiredArgsConstructor
+@Component
 public class CustomerService {
     private final CustomerDao dao;
     public Customer createCustomer(Customer customer) {
@@ -23,9 +26,9 @@ public class CustomerService {
     }
 
     // Delete a customer by ID
-    public String deleteCustomerById(int id) {
+    public boolean deleteCustomerById(int id) {
         dao.deleteCustomerById(id);
-        return "deleted successfully";
+        return true;
     }
 
     // Get all customers
